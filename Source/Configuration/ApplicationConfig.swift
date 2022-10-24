@@ -20,31 +20,73 @@ import Foundation
 
 struct ApplicationConfig: Decodable {
 
-    let issuer: String
+    let authorizationUri: String
+    let tokenUri: String
+    let userinfoUri: String
+    let logoutUri : String
     let clientID: String
+    let clientSecret: String
     let redirectUri: String
     let postLogoutRedirectUri: String
     let scope: String
     
     init() {
-        self.issuer = ""
+        self.authorizationUri = ""
+        self.tokenUri = ""
+        self.userinfoUri = ""
+        self.logoutUri = ""
         self.clientID = ""
+        self.clientSecret = ""
         self.redirectUri = ""
         self.postLogoutRedirectUri = ""
         self.scope = ""
     }
     
-    func getIssuerUri() -> (URL?, Error?) {
+    func getAuthorizationUri()  -> (URL?, Error?) {
         
-        guard let url = URL(string: self.issuer) else {
+        guard let url = URL(string: self.authorizationUri) else {
 
-            let error = ApplicationError(title: "Invalid Configuration Error", description: "The issuer URI could not be parsed")
+            let error =  ApplicationError(title: "Invalid Configuration Error", description: "The authorizationUri URI could not be parsed")
             return (nil, error)
         }
         
         return (url, nil)
     }
+    
+    func getTokenUri()  -> (URL?, Error?) {
+        
+        guard let url = URL(string: self.tokenUri) else {
 
+            let error =  ApplicationError(title: "Invalid Configuration Error", description: "The tokenUri URI could not be parsed")
+            return (nil, error)
+        }
+        
+        return (url, nil)
+    }
+    
+    func getUserinfoUri() -> (URL?, Error?) {
+        
+        guard let url = URL(string: self.userinfoUri) else {
+
+            let error = ApplicationError(title: "Invalid Configuration Error", description: "The userinfoUri URI could not be parsed")
+            return (nil, error)
+        }
+        
+        return (url, nil)
+    }
+    
+
+    func getLogoutUri() -> (URL?, Error?) {
+        
+        guard let url = URL(string: self.logoutUri) else {
+
+            let error = ApplicationError(title: "Invalid Configuration Error", description: "The logoutUri URI could not be parsed")
+            return (nil, error)
+        }
+        
+        return (url, nil)
+    }
+    
     func getRedirectUri() -> (URL?, Error?) {
         
         guard let url = URL(string: self.redirectUri) else {

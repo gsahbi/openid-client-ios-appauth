@@ -21,7 +21,11 @@ struct Logger {
     static func error(data: String) {
         os_log("%s", type: .error, data)
     }
-
+    
+    static func error(data: Error) {
+        os_log("Error: %@", type: .debug, String(describing: data))
+    }
+    
     static func info(data: String) {
         os_log("%s", type: .info, data)
     }

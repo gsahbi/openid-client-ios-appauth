@@ -52,9 +52,7 @@ class UnauthenticatedViewModel: ObservableObject {
                 // Get metadata if required
                 var metadata: OIDServiceConfiguration? = nil
                 if metadata == nil {
-                    try DispatchQueue.global().await {
-                        metadata = try self.appauth.fetchMetadata().await()
-                    }
+                    metadata = self.appauth.fetchMetadata()
                 }
 
                 // Then redirect on the UI thread

@@ -26,36 +26,38 @@ class AppAuthHandler {
         self.config = config
         self.userAgentSession = nil
     }
-
+    
     /*
      * Get OpenID Connect endpoints
      */
-    func fetchMetadata() throws -> CoFuture<OIDServiceConfiguration> {
+    func fetchMetadata() -> OIDServiceConfiguration? {
         
-        let promise = CoPromise<OIDServiceConfiguration>()
+        let (authorizationUri, authorizationUriParseError) = self.config.getAuthorizationUri()
+        let (tokenUri, tokenUriParseError) = self.config.getTokenUri()
+        let (logoutUri, logoutUriParseError) = self.config.getLogoutUri()
         
-        let (issuerUrl, parseError) = self.config.getIssuerUri()
-        if issuerUrl == nil {
-            promise.fail(parseError!)
-            return promise
-        }
-
-        OIDAuthorizationService.discoverConfiguration(forIssuer: issuerUrl!) { metadata, ex in
-
-            if metadata != nil {
-                
-                Logger.info(data: "Metadata retrieved successfully")
-                Logger.debug(data: metadata!.description)
-                promise.success(metadata!)
-
-            } else {
-
-                let error = self.createAuthorizationError(title: "Metadata Download Error", ex: ex)
-                promise.fail(error)
-            }
+        if authorizationUri == nil {
+            Logger.error(data: authorizationUriParseError!)
+            return nil
         }
         
-        return promise
+        if tokenUri == nil {
+            Logger.error(data: tokenUriParseError!)
+            return nil
+        }
+        
+        if logoutUri == nil {
+            Logger.error(data: logoutUriParseError!)
+            return nil
+        }
+        
+        return OIDServiceConfiguration(
+            authorizationEndpoint: authorizationUri!,
+            tokenEndpoint: tokenUri!,
+            issuer: nil,
+            registrationEndpoint: nil,
+            endSessionEndpoint: logoutUri
+        );
     }
 
     /*
@@ -83,7 +85,7 @@ class AppAuthHandler {
         let request = OIDAuthorizationRequest(
             configuration: metadata,
             clientId: clientID,
-            clientSecret: nil,
+            clientSecret: self.config.clientSecret,
             scopes: scopesArray,
             redirectURL: redirectUri!,
             responseType: OIDResponseTypeCode,
