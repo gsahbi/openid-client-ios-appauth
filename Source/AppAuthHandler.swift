@@ -176,7 +176,7 @@ class AppAuthHandler {
             authorizationCode: nil,
             redirectURL: nil,
             clientID: clientID,
-            clientSecret: nil,
+            clientSecret: self.config.clientSecret,
             scope: nil,
             refreshToken: refreshToken,
             codeVerifier: nil,
